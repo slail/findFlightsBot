@@ -18,7 +18,7 @@ class MainPage(BasePage):
     def is_title_matches(self):
         return "Booking.com" in self.driver.title
  
-    def update_currency(self):
+    def update_currency(self, date):
         moveToSelectCurrency = ActionChains(self.driver)
 
         element = self.driver.find_element(*MainPageLocators.CURRENCY_BUTTON)
@@ -27,11 +27,12 @@ class MainPage(BasePage):
 
         selectCurrency = ActionChains(self.driver)
 
-        currency = WebDriverWait(self.driver, 10).until(lambda x: x.find_element(*MainPageLocators.COUNTRY_BUTTON)) 
+        mainPageObject = MainPageLocators(CURRENCY=date)
+        currency = WebDriverWait(self.driver, 10).until(lambda x: x.find_element(*mainPageObject.COUNTRY_BUTTON)) 
         selectCurrency.move_to_element(currency).click()
         selectCurrency.perform()
     
-    def searching_destination(self):
+    def searching_destination(self, date1, date2, givenAge, numberOfRooms):
         firstOption =  WebDriverWait(self.driver, 10).until(lambda x: x.find_element(*MainPageLocators.FIRST_LIST_ITEM)) 
 
         selectDestination = ActionChains(self.driver)
@@ -41,8 +42,9 @@ class MainPage(BasePage):
 
         selectDestination.move_to_element(calendar).double_click()
 
-        departDate = WebDriverWait(self.driver, 10).until(lambda x: x.find_element(*MainPageLocators.DEPART_DATE_ELEMENT))
-        returnDate = WebDriverWait(self.driver, 10).until(lambda x: x.find_element(*MainPageLocators.RETURN_DATE_ELEMENT))
+        mainPageObject = MainPageLocators(date1, date2)
+        departDate = WebDriverWait(self.driver, 10).until(lambda x: x.find_element(*mainPageObject.DEPART_DATE_ELEMENT))
+        returnDate = WebDriverWait(self.driver, 10).until(lambda x: x.find_element(*mainPageObject.RETURN_DATE_ELEMENT))
 
         selectDestination.move_to_element(departDate).click()
         selectDestination.move_to_element(returnDate).click()
@@ -60,19 +62,44 @@ class MainPage(BasePage):
         selectDestination2 = ActionChains(self.driver)
         selectAge = WebDriverWait(self.driver, 10).until(lambda x: x.find_element(*MainPageLocators.SELECT_AGE))
         selectDestination2.move_to_element(selectAge).click()
-        selectDestination2.send_keys(Keys.NUMPAD6)
-        selectDestination2.send_keys(Keys.RETURN)
+        
+        for i in range(19):
+            if givenAge == str(i):
+                selectDestination2.send_keys(givenAge)
 
         increaseRooms = WebDriverWait(self.driver, 10).until(lambda x: x.find_element(*MainPageLocators.INCREASE_ROOMS))
-        selectDestination2.move_to_element(increaseRooms).click()
+        for i in range(numberOfRooms - 1):
+            selectDestination2.move_to_element(increaseRooms).click()
 
         submitButton = self.driver.find_element(*MainPageLocators.SUBMIT)
         selectDestination2.move_to_element(submitButton).click()
 
         selectDestination2.perform()
+
  
 class SearchResultPage(BasePage):
 
     def is_results_found(self):
         return "No result found." not in self.driver.page_source
     
+    def apply_filtration(self, *star_values):
+        
+        oneStars = WebDriverWait(self.driver, 20).until(lambda x: x.find_element(*SearchResultsPageLocators.INCLUDE_ONESTARS))
+        twoStars = WebDriverWait(self.driver, 20).until(lambda x: x.find_element(*SearchResultsPageLocators.INCLUDE_TWOSTARS))
+        threeStars = WebDriverWait(self.driver, 20).until(lambda x: x.find_element(*SearchResultsPageLocators.INCLUDE_THREESTARS))
+        fourStars = WebDriverWait(self.driver, 20).until(lambda x: x.find_element(*SearchResultsPageLocators.INCLUDE_FOURSTARS))
+        fiveStars = WebDriverWait(self.driver, 20).until(lambda x: x.find_element(*SearchResultsPageLocators.INCLUDE_FIVESTARS))
+
+        stars = [oneStars, twoStars, threeStars, fourStars, fiveStars]
+
+        filters = ActionChains(self.driver)
+        for star_value in star_values:                
+            star_value = stars[star_value - 1] 
+            filters.move_to_element(star_value).click()
+
+        filters.perform()
+
+
+class ThirdPageResult(BasePage):
+    def is_results_found(self):
+        return "No result found." not in self.driver.page_source
