@@ -17,19 +17,27 @@ class PythonOrgSearchTTest(unittest.TestCase):
         
     def test_One(self):
         mainPage = page.MainPage(self.driver)
-        currency = "CAD"
-        city = "New York"
-        departDate = "2023-01-01"
-        returnDate = "2023-01-16"
-        ageOfKid = "17"
-        stars = (4, 5)
-        numberOfAdults = 1
-        numberOfRooms = 4
-        sortBy = "Price (lowest first)"
-
+        currency = input("Enter a currency: (First Three letters, ALL CAPS, Ex. CAD, USD): ")
+        city = input("Enter a city: ")
+        departDate = input("Enter a DEPART date (In the formate: YEAR-MONTH-DAY, ex. 2023-12-31): ")
+        returnDate = input("Enter a RETURN date (In the formate: YEAR-MONTH-DAY, ex. 2023-12-31): ")
+        ageOfKid = input("Enter the age of your ONE Kid (max 17): ")
+        ### Getting whats STAR Hotels USER wants ###
+        stars = []
+        numOfStars = input("Enter what STAR hotels you want (type 'q' to quit): ")
+        while numOfStars != "q":
+            stars.append(numOfStars)
+            numOfStars = input("enter what star hotels you want (type 'q' when you're finished): ")
+        stars = [int(num) for num in stars]
+        stars = tuple(stars)
+        ### 
+        numberOfAdults = int(input("Enter number of adults: "))
+        numberOfRooms = int(input("Enter number of rooms: "))
+        sortBy = input("Enter how you'd like to sort your hotels by, options are: Top Picks for Families\nHomes & apartments first\nPrice (lowest first)\nBest reviewed & lowest price\nStars (highest first)\nStars (lowest first)\nStar rating and price\nDistance From Downtown\nTop Reviewed\nEnter Here: ")
         assert mainPage.is_title_matches();
         mainPage.update_currency(currency)
         mainPage.search_text_element = city
+        time.sleep(1)
         mainPage.searching_destination(departDate, returnDate, ageOfKid, numberOfAdults, numberOfRooms)
         search_result_page = page.SearchResultPage(self.driver)
 

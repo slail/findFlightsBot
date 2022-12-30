@@ -5,7 +5,7 @@ from selenium.webdriver.common.by import By
 class MainPageLocators(object): # Will have all locators for the stuff on our "main" page
     CURRENCY_BUTTON = (By.CSS_SELECTOR, "button[data-modal-aria-label=\"Select your currency\"]") # (How we acess, what the value is)
 
-    FIRST_LIST_ITEM = (By.CSS_SELECTOR, 'li[data-label="New York, New York State, United States"]')
+    FIRST_LIST_ITEM = (By.CSS_SELECTOR, 'li[class="c-autocomplete__item sb-autocomplete__item sb-autocomplete__item-with_photo sb-autocomplete__item__item--elipsis sb-autocomplete__item--icon_revamp sb-autocomplete__item--city "]')
     DATE_PICKER = (By.CSS_SELECTOR, 'svg[class="bk-icon -experiments-calendar sb-date-picker_icon-svg"]')
 
     NUMBER_OF_PEOEPLE = (By.ID, "xp__guests__toggle")
