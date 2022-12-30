@@ -2,7 +2,8 @@ from locator import *
 from element import BasePageElement
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support import expected_conditions as EC
+from prettytable import PrettyTable 
 
 class SearchTextElement(BasePageElement):
     locator = "ss"
@@ -20,8 +21,10 @@ class MainPage(BasePage):
  
     def update_currency(self, date):
         moveToSelectCurrency = ActionChains(self.driver)
-
+    
+        
         element = self.driver.find_element(*MainPageLocators.CURRENCY_BUTTON)
+        WebDriverWait(self.driver, 15).until(EC.visibility_of(element))
         moveToSelectCurrency.move_to_element(element).click()
         moveToSelectCurrency.perform()
 
@@ -32,7 +35,7 @@ class MainPage(BasePage):
         selectCurrency.move_to_element(currency).click()
         selectCurrency.perform()
     
-    def searching_destination(self, date1, date2, givenAge, numberOfRooms):
+    def searching_destination(self, date1, date2, givenAge, numberOfAdults, numberOfRooms):
         firstOption =  WebDriverWait(self.driver, 10).until(lambda x: x.find_element(*MainPageLocators.FIRST_LIST_ITEM)) 
 
         selectDestination = ActionChains(self.driver)
@@ -52,11 +55,18 @@ class MainPage(BasePage):
 
         selectPeople = WebDriverWait(self.driver, 10).until(lambda x: x.find_element(*MainPageLocators.NUMBER_OF_PEOEPLE))
         decreaseAdult = WebDriverWait(self.driver, 10).until(lambda x: x.find_element(*MainPageLocators.DECREASE_ADULTS))
+        increaseAdult = WebDriverWait(self.driver, 10).until(lambda x: x.find_element(*MainPageLocators.INCREASE_ADULTS))
         increaseKids = WebDriverWait(self.driver, 10).until(lambda x: x.find_element(*MainPageLocators.INCREASE_KIDS))
         selectDestination.move_to_element(selectPeople).click()
-        selectDestination.move_to_element(decreaseAdult).click()
-        selectDestination.move_to_element(increaseKids).click()
-        
+
+        if numberOfAdults > 2:
+            for i in range(numberOfAdults - 2):
+                selectDestination.move_to_element(increaseAdult).click()
+        else:
+            selectDestination.move_to_element(decreaseAdult).click()
+
+        selectDestination.move_to_element(increaseKids).click() # For ONE kid
+
         selectDestination.perform()
 
         selectDestination2 = ActionChains(self.driver)
@@ -82,7 +92,7 @@ class SearchResultPage(BasePage):
     def is_results_found(self):
         return "No result found." not in self.driver.page_source
     
-    def apply_filtration(self, *star_values):
+    def apply_filtration(self, sortBy, *star_values):
         
         oneStars = WebDriverWait(self.driver, 20).until(lambda x: x.find_element(*SearchResultsPageLocators.INCLUDE_ONESTARS))
         twoStars = WebDriverWait(self.driver, 20).until(lambda x: x.find_element(*SearchResultsPageLocators.INCLUDE_TWOSTARS))
@@ -97,8 +107,54 @@ class SearchResultPage(BasePage):
             star_value = stars[star_value - 1] 
             filters.move_to_element(star_value).click()
 
+        sortButton = WebDriverWait(self.driver, 20).until(lambda x: x.find_element(*SearchResultsPageLocators.SORT_BUTTON))
+        filters.scroll_to_element(sortButton)
+        filters.move_to_element(sortButton).click()
         filters.perform()
 
+        filtersSecond = ActionChains(self.driver)
+        sortOptionParent = WebDriverWait(self.driver, 20).until(lambda x: x.find_element(*SearchResultsPageLocators.SORT_OPTIONS))
+        sortOptions =  WebDriverWait(sortOptionParent, 20).until(lambda x: x.find_elements(*SearchResultsPageLocators.SORT_OPTIONS_NAMES))
+
+        for option in sortOptions:
+            if option.text == sortBy:
+                filtersSecond.scroll_to_element(option)
+                filtersSecond.move_to_element(option).click()
+
+        filtersSecond.perform()
+
+
+    def findHotels(self):
+        hotelsClass = WebDriverWait(self.driver, 20).until(lambda x: x.find_element(*SearchResultsPageLocators.HOTEL_OPTIONS_CLASSNAME))
+        hotelsName = WebDriverWait(hotelsClass, 20).until(lambda x: x.find_elements(*SearchResultsPageLocators.HOTEL_NAMES))
+        hotelPrices = WebDriverWait(hotelsClass, 20).until(lambda x: x.find_elements(*SearchResultsPageLocators.HOTELS_PRICES))
+        hotelScores = WebDriverWait(hotelsClass, 20).until(lambda x: x.find_elements(*SearchResultsPageLocators.HOTEL_SCORES))
+        hotelTable = [[] for _ in range(len(hotelsName))]
+
+        for h in range(len(hotelsName)):
+            try: 
+                hotelTable[h] = [hotelsName[h].text]
+            except:
+                continue 
+        for n in range(len(hotelPrices)):
+            try:
+                hotelTable[n].append(hotelPrices[n].text)
+            except:
+                continue
+        for z in range(len(hotelScores)):
+            try:
+                hotelTable[z].append(hotelScores[z].text)
+            except:
+                continue
+        table = PrettyTable( 
+            field_names = ["Hotel Names", "Hotel Prices", "Hotel Score"]
+        )
+
+        theFooter = self.driver.find_element(*SearchResultsPageLocators.FOOTER_ELEMENT)
+        WebDriverWait(self.driver, 20).until(EC.visibility_of(theFooter))
+
+        table.add_rows(hotelTable)
+        print(table)
 
 class ThirdPageResult(BasePage):
     def is_results_found(self):

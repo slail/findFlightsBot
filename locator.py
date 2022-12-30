@@ -10,6 +10,9 @@ class MainPageLocators(object): # Will have all locators for the stuff on our "m
 
     NUMBER_OF_PEOEPLE = (By.ID, "xp__guests__toggle")
     DECREASE_ADULTS = (By.CSS_SELECTOR, 'button[aria-label="Decrease number of Adults"]')
+    INCREASE_ADULTS = (By.CSS_SELECTOR, 'button[aria-label="Increase number of Adults"]')
+
+
     INCREASE_KIDS = (By.CSS_SELECTOR, 'button[aria-label="Increase number of Children"]')
     SELECT_AGE = (By.CSS_SELECTOR, 'select[aria-label="Child 1 age"]')
     INCREASE_ROOMS = (By.CSS_SELECTOR, 'button[aria-label="Increase number of Rooms"]')
@@ -30,3 +33,16 @@ class SearchResultsPageLocators(object):
     INCLUDE_THREESTARS = (By.CSS_SELECTOR, 'div[data-filters-item="class:class=3"]')
     INCLUDE_FOURSTARS = (By.CSS_SELECTOR, 'div[data-filters-item="class:class=4"]')
     INCLUDE_FIVESTARS = (By.CSS_SELECTOR, 'div[data-filters-item="class:class=5"]')
+
+    SORT_BUTTON = (By.CSS_SELECTOR, 'button[aria-expanded="false"]')
+    SORT_OPTIONS = (By.CLASS_NAME, "ff0ad2a91a")
+    SORT_OPTIONS_NAMES = (By.CSS_SELECTOR, 'div[class="b1e6dd8416 aacd9d0b0a"]')
+
+    SORT_OPTION = (By.CSS_SELECTOR, 'button[data-id="bayesian_review_score"]')
+    
+    HOTEL_OPTIONS_CLASSNAME = (By.CLASS_NAME, "d4924c9e74")
+    HOTEL_NAMES = (By.CSS_SELECTOR, 'div[class="fcab3ed991 a23c043802"]')
+    HOTELS_PRICES = (By.CSS_SELECTOR, 'span[data-testid="price-and-discounted-price"]')
+    HOTEL_SCORES = (By.CSS_SELECTOR, 'div[class="b5cd09854e d10a6220b4"]')
+
+    FOOTER_ELEMENT = (By.CSS_SELECTOR, 'div[class="d7a0553560"]')

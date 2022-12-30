@@ -21,26 +21,31 @@ class PythonOrgSearchTTest(unittest.TestCase):
         city = "New York"
         departDate = "2023-01-01"
         returnDate = "2023-01-16"
-        ageOfKid = "13"
+        ageOfKid = "17"
         stars = (4, 5)
-        numberOfRooms = 5
+        numberOfAdults = 1
+        numberOfRooms = 4
+        sortBy = "Price (lowest first)"
 
         assert mainPage.is_title_matches();
         mainPage.update_currency(currency)
         mainPage.search_text_element = city
-        mainPage.searching_destination(departDate, returnDate, ageOfKid,numberOfRooms)
+        mainPage.searching_destination(departDate, returnDate, ageOfKid, numberOfAdults, numberOfRooms)
         search_result_page = page.SearchResultPage(self.driver)
 
         assert search_result_page.is_results_found();
         secondPage = page.SearchResultPage(self.driver)
-        secondPage.apply_filtration(*stars)
-        thirdPage = page.ThirdPageResult(self.driver)
+        secondPage.apply_filtration(sortBy, *stars)
+        time.sleep(3)
+        secondPage.findHotels()
 
+
+        thirdPage = page.ThirdPageResult(self.driver)
         assert thirdPage.is_results_found()
         
 
     def tearDown(self):
-        time.sleep(15)
+        time.sleep(5)
         self.driver.close()
 
 unittest.main()
