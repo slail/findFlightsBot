@@ -28,11 +28,6 @@ class MainPageLocators(object): # Will have all locators for the stuff on our "m
         self.RETURN_DATE_ELEMENT = (By.CSS_SELECTOR, f'td[data-date="{RETURN_DATE}"')
     
 class SearchResultsPageLocators(object):
-    INCLUDE_ONESTARS = (By.CSS_SELECTOR, 'div[data-filters-item="class:class=1"]')
-    INCLUDE_TWOSTARS = (By.CSS_SELECTOR, 'div[data-filters-item="class:class=2"]')
-    INCLUDE_THREESTARS = (By.CSS_SELECTOR, 'div[data-filters-item="class:class=3"]')
-    INCLUDE_FOURSTARS = (By.CSS_SELECTOR, 'div[data-filters-item="class:class=4"]')
-    INCLUDE_FIVESTARS = (By.CSS_SELECTOR, 'div[data-filters-item="class:class=5"]')
 
     SORT_BUTTON = (By.CSS_SELECTOR, 'button[aria-expanded="false"]')
     SORT_OPTIONS = (By.CLASS_NAME, "ff0ad2a91a")
@@ -41,8 +36,12 @@ class SearchResultsPageLocators(object):
     SORT_OPTION = (By.CSS_SELECTOR, 'button[data-id="bayesian_review_score"]')
     
     HOTEL_OPTIONS_CLASSNAME = (By.CLASS_NAME, "d4924c9e74")
+    HOTEL_BOXES = (By.CSS_SELECTOR, 'div[class="a1b3f50dcd b2fe1a41c3 a7c67ebfe5 d19ba76520 d14b211b4f"]')
     HOTEL_NAMES = (By.CSS_SELECTOR, 'div[class="fcab3ed991 a23c043802"]')
     HOTELS_PRICES = (By.CSS_SELECTOR, 'span[data-testid="price-and-discounted-price"]')
     HOTEL_SCORES = (By.CSS_SELECTOR, 'div[class="b5cd09854e d10a6220b4"]')
 
     FOOTER_ELEMENT = (By.CSS_SELECTOR, 'div[class="d7a0553560"]')
+    def __init__(self, STAR_VALUE = None):
+        self.STAR_VALUE = STAR_VALUE
+        self.INCLUDE_STAR = (By.CSS_SELECTOR, f'div[data-filters-item="class:class={STAR_VALUE}"]')

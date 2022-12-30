@@ -28,8 +28,6 @@ class PythonOrgSearchTTest(unittest.TestCase):
         while numOfStars != "q":
             stars.append(numOfStars)
             numOfStars = input("enter what star hotels you want (type 'q' when you're finished): ")
-        stars = [int(num) for num in stars]
-        stars = tuple(stars)
         ### 
         numberOfAdults = int(input("Enter number of adults: "))
         numberOfRooms = int(input("Enter number of rooms: "))
@@ -43,7 +41,10 @@ class PythonOrgSearchTTest(unittest.TestCase):
 
         assert search_result_page.is_results_found();
         secondPage = page.SearchResultPage(self.driver)
-        secondPage.apply_filtration(sortBy, *stars)
+        secondPage.apply_sort(sortBy)
+        time.sleep(3)
+        for i in range(len(stars)):
+            secondPage.apply_stars(stars[i])
         time.sleep(3)
         secondPage.findHotels()
 
@@ -53,7 +54,6 @@ class PythonOrgSearchTTest(unittest.TestCase):
         
 
     def tearDown(self):
-        time.sleep(5)
         self.driver.close()
 
 unittest.main()

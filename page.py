@@ -93,29 +93,16 @@ class SearchResultPage(BasePage):
     def is_results_found(self):
         return "No result found." not in self.driver.page_source
     
-    def apply_filtration(self, sortBy, *star_values):
-        
-        stars = []
-        for star_value in star_values:
-            if star_value == 1:
-                oneStars = WebDriverWait(self.driver, 20).until(lambda x: x.find_element(*SearchResultsPageLocators.INCLUDE_ONESTARS))
-                stars.append(oneStars)
-            elif star_value == 2:
-                twoStars = WebDriverWait(self.driver, 20).until(lambda x: x.find_element(*SearchResultsPageLocators.INCLUDE_TWOSTARS))
-                stars.append(twoStars)
-            elif star_value == 3:
-                threeStars = WebDriverWait(self.driver, 20).until(lambda x: x.find_element(*SearchResultsPageLocators.INCLUDE_THREESTARS))
-                stars.append(threeStars)
-            elif star_value == 4:
-                fourStars = WebDriverWait(self.driver, 20).until(lambda x: x.find_element(*SearchResultsPageLocators.INCLUDE_FOURSTARS))
-                stars.append(fourStars)
-            elif star_value == 5:
-                fiveStars = WebDriverWait(self.driver, 20).until(lambda x: x.find_element(*SearchResultsPageLocators.INCLUDE_FIVESTARS))
-                stars.append(fiveStars)
-
+    def apply_stars(self, star_value):
         filters = ActionChains(self.driver)
-        for star_value in stars:                
-            filters.move_to_element(star_value).click()
+
+        searchObject  = SearchResultsPageLocators(star_value)
+        star = WebDriverWait(self.driver, 10).until(lambda x: x.find_element(*searchObject.INCLUDE_STAR))
+        filters.move_to_element(star).click()
+        filters.perform()
+
+    def apply_sort(self, sortBy):
+        filters = ActionChains(self.driver)
 
         sortButton = WebDriverWait(self.driver, 20).until(lambda x: x.find_element(*SearchResultsPageLocators.SORT_BUTTON))
         filters.scroll_to_element(sortButton)
@@ -135,33 +122,28 @@ class SearchResultPage(BasePage):
 
 
     def findHotels(self):
-        time.sleep(5)
+        time.sleep(8)
         hotelsClass = WebDriverWait(self.driver, 20).until(lambda x: x.find_element(*SearchResultsPageLocators.HOTEL_OPTIONS_CLASSNAME))
         hotelsName = WebDriverWait(hotelsClass, 20).until(lambda x: x.find_elements(*SearchResultsPageLocators.HOTEL_NAMES))
         hotelPrices = WebDriverWait(hotelsClass, 20).until(lambda x: x.find_elements(*SearchResultsPageLocators.HOTELS_PRICES))
-        hotelScores = WebDriverWait(hotelsClass, 20).until(lambda x: x.find_elements(*SearchResultsPageLocators.HOTEL_SCORES))
         hotelTable = [[] for _ in range(len(hotelsName))]
-
+        
         for h in range(len(hotelsName)):
-            try: 
-                hotelTable[h] = [hotelsName[h].text]
-            except:
-                continue 
-        for n in range(len(hotelPrices)):
+            hotelTable[h] = [hotelsName[h].text]
+            hotelTable[h].append(hotelPrices[h].text)
+
+        hotelBoxes =  WebDriverWait(hotelsClass, 20).until(lambda x: x.find_elements(*SearchResultsPageLocators.HOTEL_BOXES))
+        for i in range(len(hotelBoxes)):
+            hotelBox = hotelBoxes[i]
             try:
-                hotelTable[n].append(hotelPrices[n].text)
+                hotelScore = WebDriverWait(hotelBox, 20).until(lambda x: x.find_element(*SearchResultsPageLocators.HOTEL_SCORES))
+                hotelTable[i].append(hotelScore.text)
             except:
-                continue
-        for z in range(len(hotelScores)):
-            try:
-                hotelTable[z].append(hotelScores[z].text)
-            except:
-                continue
+                hotelTable[i].append("NO RATING")
+
         table = PrettyTable( 
             field_names = ["Hotel Names", "Hotel Prices", "Hotel Score"]
         )
-
-
         table.add_rows(hotelTable)
         print(table)
 
