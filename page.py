@@ -109,8 +109,12 @@ class SearchResultPage(BasePage):
         filters = ActionChains(self.driver)
 
         searchObject = SearchResultsPageLocators(star_value)
-        star = WebDriverWait(self.driver, 10).until(
-            lambda x: x.find_element(*searchObject.INCLUDE_STAR))
+        try:
+            star = WebDriverWait(self.driver, 10).until(
+                lambda x: x.find_element(*searchObject.INCLUDE_STAR))
+        except:
+            print("Star Rating Not Found!")
+
         filters.move_to_element(star).click()
         filters.perform()
 
